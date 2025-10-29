@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mi Historial - Galaxy</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .estado-completado {
+            color: green;
+            font-weight: bold;
+        }
+        .estado-procesando {
+            color: orange;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>📊 Mi Historial de Análisis</h1>
+    <p>Usuario: <strong>{{ username }}</strong></p>
+    
+    <h2>Mis Análisis Realizados:</h2>
+    
+    {% if historial %}
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Herramienta</th>
+                <th>Archivo</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+            </tr>
+            {% for analisis in historial %}
+            <tr>
+                <td>{{ analisis[0] }}</td>  <!-- id -->
+                <td>{{ analisis[2] }}</td>  <!-- tool_name -->
+                <td>{{ analisis[3] }}</td>  <!-- input_file -->
+                <td class="estado-{{ analisis[4] }}">{{ analisis[4] }}</td>  <!-- status -->
+                <td>{{ analisis[5] }}</td>  <!-- created_at -->
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>😴 No hay análisis en tu historial aún.</p>
+        <p>¡Ve a Galaxy y comienza a analizar tus datos!</p>
+    {% endif %}
+    
+    <br>
+    <a href="http://localhost:8080" target="_blank">🚀 Ir a Galaxy para hacer análisis</a>
+    <br><br>
+    <a href="{{ url_for('dashboard') }}">↩️ Volver al Dashboard</a>
+    <br>
+    <a href="{{ url_for('logout') }}">🔒 Cerrar Sesión</a>
+</body>
+</html>

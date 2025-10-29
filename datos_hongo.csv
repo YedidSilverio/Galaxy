@@ -1,0 +1,6 @@
+muestra_id,temperatura,ph,crecimiento,especie
+M001,25,6.5,0.85,Aspergillus_niger
+M002,28,5.8,0.92,Penicillium_chrysogenum
+M003,30,7.0,0.78,Candida_albicans
+M004,22,6.2,0.88,Aspergillus_fumigatus
+M005,26,5.5,0.95,Penicillium_roqueforti

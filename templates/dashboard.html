@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Galaxy Bioinformática</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: var(--dark);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .user-info {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .main-content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        .card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        /* Área de Subida de Archivos */
+        .upload-area {
+            border: 3px dashed var(--primary);
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--success);
+            background: #e8f5e8;
+        }
+        
+        .upload-icon {
+            font-size: 3em;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            display: inline-block;
+            padding: 15px 30px;
+            background: var(--primary);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .file-label:hover {
+            background: #2980b9;
+        }
+        
+        .selected-files {
+            margin-top: 20px;
+            text-align: left;
+        }
+        
+        .file-item {
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid var(--success);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Herramientas */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .tool-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .tool-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+        
+        .tool-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .tool-card.selected {
+            border-color: var(--success);
+            background: #e8f5e8;
+        }
+        
+        /* Progreso */
+        .progress-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        /* Acciones Rápidas */
+        .quick-actions {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .action-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--dark);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .action-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .action-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>🧬 Galaxy Bioinformática</h1>
+            <p>Análisis completo de secuenciación - Todo en un solo lugar</p>
+        </div>
+        
+        <div class="user-info">
+            <div>
+                <strong>Usuario:</strong> {{ username }}
+            </div>
+            <div>
+                <a href="/logout" class="btn btn-danger">🚪 Cerrar Sesión</a>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Panel Principal -->
+            <div class="card">
+                <h2>📁 Subir Archivos de Secuenciación</h2>
+                
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📤</div>
+                    <h3>Arrastra archivos aquí o haz clic para seleccionar</h3>
+                    <p>Formatos soportados: FASTA, FASTQ, CSV, TXT</p>
+                    
+                    <input type="file" id="fileInput" class="file-input" multiple 
+                           accept=".fasta,.fa,.fastq,.fq,.csv,.txt">
+                    <label for="fileInput" class="file-label">📎 Seleccionar Archivos</label>
+                    
+                    <div class="selected-files" id="selectedFiles">
+                        <!-- Los archivos seleccionados aparecerán aquí -->
+                    </div>
+                </div>
+
+                <h2>🔧 Herramientas de Análisis</h2>
+                <div class="tools-grid">
+                    <div class="tool-card" data-tool="fastqc">
+                        <div class="tool-icon">📊</div>
+                        <h3>FastQC</h3>
+                        <p>Control de Calidad</p>
+                    </div>
+                    
+                    <div class="tool-card" data-tool="bowtie">
+                        <div class="tool-icon">🎯</div>
+                        <h3>Bowtie2</h3>
+                        <p>Alineamiento</p>
+                    </div>
+                    
+                    <div class="tool-card" data-tool="velvet">
+                        <div class="tool-icon">🧬</div>
+                        <h3>Velvet</h3>
+                        <p>Ensamblaje</p>
+                    </div>
+                    
+                    <div class="tool-card" data-tool="quast">
+                        <div class="tool-icon">📈</div>
+                        <h3>QUAST</h3>
+                        <p>Evaluación</p>
+                    </div>
+                    
+                    <div class="tool-card" data-tool="augustus">
+                        <div class="tool-icon">🔍</div>
+                        <h3>AUGUSTUS</h3>
+                        <p>Predicción de Genes</p>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <h3>Progreso del Análisis</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div id="progressText">Esperando archivos...</div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-success" id="startAnalysis" disabled>
+                        🚀 Iniciar Análisis Completo
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Panel Lateral -->
+            <div class="quick-actions">
+                <a href="http://localhost:8080" class="action-card" target="_blank">
+                    <div class="action-icon">🌐</div>
+                    <h3>Galaxy Original</h3>
+                    <p>Abrir en nueva pestaña</p>
+                </a>
+                
+                <a href="/resultados" class="action-card">
+                    <div class="action-icon">📊</div>
+                    <h3>Ver Resultados</h3>
+                    <p>Tablas y gráficos</p>
+                </a>
+                
+                <a href="/historial" class="action-card">
+                    <div class="action-icon">📋</div>
+                    <h3>Historial</h3>
+                    <p>Análisis anteriores</p>
+                </a>
+                
+                <div class="action-card">
+                    <div class="action-icon">⚙️</div>
+                    <h3>Configuración</h3>
+                    <p>Ajustes del sistema</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Manejo de subida de archivos
+        const fileInput = document.getElementById('fileInput');
+        const selectedFiles = document.getElementById('selectedFiles');
+        const uploadArea = document.getElementById('uploadArea');
+        const startButton = document.getElementById('startAnalysis');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        
+        let selectedTools = new Set();
+        
+        // Arrastrar y soltar
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#27ae60';
+            uploadArea.style.background = '#e8f5e8';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#3498db';
+            uploadArea.style.background = '#f8f9fa';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            handleFiles(e.dataTransfer.files);
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+        
+        function handleFiles(files) {
+            selectedFiles.innerHTML = '';
+            
+            if (files.length === 0) {
+                selectedFiles.innerHTML = '<p>No hay archivos seleccionados</p>';
+                startButton.disabled = true;
+                return;
+            }
+            
+            for (let file of files) {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div>
+                        <strong>${file.name}</strong>
+                        <br>
+                        <small>${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+                    </div>
+                    <div style="color: #27ae60;">✓</div>
+                `;
+                selectedFiles.appendChild(fileItem);
+            }
+            
+            startButton.disabled = false;
+            progressText.textContent = 'Archivos listos para análisis';
+        }
+        
+        // Selección de herramientas
+        document.querySelectorAll('.tool-card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.toggle('selected');
+                const tool = card.dataset.tool;
+                
+                if (card.classList.contains('selected')) {
+                    selectedTools.add(tool);
+                } else {
+                    selectedTools.delete(tool);
+                }
+                
+                updateProgress();
+            });
+        });
+        
+        function updateProgress() {
+            const progress = (selectedTools.size / 5) * 100;
+            progressFill.style.width = progress + '%';
+            
+            if (selectedTools.size > 0) {
+                progressText.textContent = `${selectedTools.size} herramienta(s) seleccionada(s)`;
+            } else {
+                progressText.textContent = 'Selecciona al menos una herramienta';
+            }
+        }
+        
+        // Iniciar análisis
+        startButton.addEventListener('click', () => {
+            if (selectedTools.size === 0) {
+                alert('Por favor selecciona al menos una herramienta');
+                return;
+            }
+            
+            startButton.disabled = true;
+            startButton.textContent = '⏳ Procesando...';
+            
+            // Simular progreso
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                progressFill.style.width = progress + '%';
+                progressText.textContent = `Analizando... ${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    progressText.textContent = '✅ Análisis completado!';
+                    startButton.textContent = '🔄 Ejecutar Nuevo Análisis';
+                    startButton.disabled = false;
+                    
+                    // Guardar en historial
+                    guardarEnHistorial();
+                }
+            }, 200);
+        });
+        
+        function guardarEnHistorial() {
+            // Aquí iría la llamada a la API para guardar en la base de datos
+            console.log('Guardando en historial...', Array.from(selectedTools));
+        }
+    </script>
+</body>
+</html>

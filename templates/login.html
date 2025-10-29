@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - Galaxy</title>
+</head>
+<body>
+    <h1>Login Galaxy</h1>
+    
+    <!-- Mostrar mensajes de error/success -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div style="color: red;">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Formulario de login -->
+    <form method="POST">
+        <p>Usuario: <input type="text" name="username" required></p>
+        <p>Contraseña: <input type="password" name="password" required></p>
+        <p><input type="submit" value="Iniciar Sesión"></p>
+    </form>
+    
+    <p><a href="{{ url_for('register') }}">¿No tienes cuenta? Regístrate aquí</a></p>
+</body>
+</html>

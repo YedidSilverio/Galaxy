@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registro - Galaxy</title>
+</head>
+<body>
+    <h1>Registro Galaxy</h1>
+    
+    <!-- Mostrar mensajes -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div style="color: red;">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Formulario de registro -->
+    <form method="POST">
+        <p>Usuario: <input type="text" name="username" required></p>
+        <p>Email: <input type="email" name="email" required></p>
+        <p>Contraseña: <input type="password" name="password" required></p>
+        <p>Confirmar Contraseña: <input type="password" name="confirm_password" required></p>
+        <p><input type="submit" value="Registrarse"></p>
+    </form>
+    
+    <p><a href="{{ url_for('login') }}">¿Ya tienes cuenta? Inicia sesión aquí</a></p>
+</body>
+</html>
