@@ -32,6 +32,9 @@
             border-radius: 15px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
+            display: flex;
+            gap: 20px;
+            padding: 20px;
         }
         
         .header {
@@ -53,13 +56,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
         }
         
         .main-content {
-            padding: 30px;
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
+            flex: 1;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
         
         .card {
@@ -105,63 +110,6 @@
         
         .btn-danger {
             background: var(--danger);
-        }
-        
-        /* Área de Subida de Archivos */
-        .upload-area {
-            border: 3px dashed var(--primary);
-            border-radius: 10px;
-            padding: 40px;
-            text-align: center;
-            margin: 20px 0;
-            background: #f8f9fa;
-            transition: all 0.3s ease;
-        }
-        
-        .upload-area:hover {
-            border-color: var(--success);
-            background: #e8f5e8;
-        }
-        
-        .upload-icon {
-            font-size: 3em;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-        
-        .file-input {
-            display: none;
-        }
-        
-        .file-label {
-            display: inline-block;
-            padding: 15px 30px;
-            background: var(--primary);
-            color: white;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-        
-        .file-label:hover {
-            background: #2980b9;
-        }
-        
-        .selected-files {
-            margin-top: 20px;
-            text-align: left;
-        }
-        
-        .file-item {
-            background: white;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-            border-left: 4px solid var(--success);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
         
         /* Herramientas */
@@ -221,9 +169,12 @@
             transition: width 0.5s ease;
         }
         
-        /* Acciones Rápidas */
-        .quick-actions {
-            display: grid;
+        /* Barra lateral */
+        .sidebar {
+            width: 220px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
             gap: 15px;
         }
         
@@ -248,179 +199,189 @@
             margin-bottom: 10px;
             color: var(--primary);
         }
+        
+        /* Tabla */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            color: #000;
+            min-width: 700px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--dark);
+            color: white;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
-        <div class="header">
-            <h1>🧬 Galaxy Bioinformática</h1>
-            <p>Análisis completo de secuenciación - Todo en un solo lugar</p>
-        </div>
-        
-        <div class="user-info">
-            <div>
-                <strong>Usuario:</strong> {{ username }}
-            </div>
-            <div>
-                <a href="/logout" class="btn btn-danger">🚪 Cerrar Sesión</a>
-            </div>
-        </div>
-        
+        <!-- Panel Central -->
         <div class="main-content">
-            <!-- Panel Principal -->
+            <!-- Header -->
+            <div class="header">
+                <h1>🧬 Galaxy Bioinformática</h1>
+                <p>Análisis completo de secuenciación - Todo en un solo lugar</p>
+            </div>
+
+            <!-- Información del usuario -->
+            <div class="user-info">
+                <div>
+                    <strong>Usuario:</strong> {{ username }}
+                </div>
+                <div>
+                    <a href="/logout" class="btn btn-danger">🚪 Cerrar Sesión</a>
+                </div>
+            </div>
+
+            <!-- Crear nueva historia -->
+<div class="card" style="margin-top: 20px;">
+    <h2>➕ Crear Nueva Historia</h2>
+    <form action="{{ url_for('crear_historia') }}" method="POST" style="display:flex; gap:10px; align-items:center;">
+        <input type="text" name="nombre_historia" placeholder="Nombre de la nueva historia" required style="flex:1; padding:10px; border-radius:5px; border:1px solid #ccc;">
+        <button type="submit" class="btn btn-success">Crear Historia</button>
+    </form>
+</div>
+
+
+            <!-- Subida de archivos -->
+<div class="card">
+    <h2>📁 Subir Archivos de Secuenciación</h2>
+    <form action="{{ url_for('subir_archivo') }}" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit" class="btn btn-primary">📤 Subir Archivo</button>
+    </form>
+</div>
+
+            <!-- Herramientas de Análisis -->
             <div class="card">
-                <h2>📁 Subir Archivos de Secuenciación</h2>
-                
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">📤</div>
-                    <h3>Arrastra archivos aquí o haz clic para seleccionar</h3>
-                    <p>Formatos soportados: FASTA, FASTQ, CSV, TXT</p>
-                    
-                    <input type="file" id="fileInput" class="file-input" multiple 
-                           accept=".fasta,.fa,.fastq,.fq,.csv,.txt">
-                    <label for="fileInput" class="file-label">📎 Seleccionar Archivos</label>
-                    
-                    <div class="selected-files" id="selectedFiles">
-                        <!-- Los archivos seleccionados aparecerán aquí -->
-                    </div>
-                </div>
-
                 <h2>🔧 Herramientas de Análisis</h2>
-                <div class="tools-grid">
-                    <div class="tool-card" data-tool="fastqc">
-                        <div class="tool-icon">📊</div>
-                        <h3>FastQC</h3>
-                        <p>Control de Calidad</p>
-                    </div>
-                    
-                    <div class="tool-card" data-tool="bowtie">
-                        <div class="tool-icon">🎯</div>
-                        <h3>Bowtie2</h3>
-                        <p>Alineamiento</p>
-                    </div>
-                    
-                    <div class="tool-card" data-tool="velvet">
-                        <div class="tool-icon">🧬</div>
-                        <h3>Velvet</h3>
-                        <p>Ensamblaje</p>
-                    </div>
-                    
-                    <div class="tool-card" data-tool="quast">
-                        <div class="tool-icon">📈</div>
-                        <h3>QUAST</h3>
-                        <p>Evaluación</p>
-                    </div>
-                    
-                    <div class="tool-card" data-tool="augustus">
-                        <div class="tool-icon">🔍</div>
-                        <h3>AUGUSTUS</h3>
-                        <p>Predicción de Genes</p>
-                    </div>
-                </div>
+<div class="tools-grid">
+            <!-- FastQC -->
+    <div class="tool-card" data-tool="fastqc">
+        <div class="tool-icon">📊</div>
+        <h3>FastQC</h3>
+        <p>Control de Calidad</p>
+        <form action="{{ url_for('ejecutar_fastqc') }}" method="POST" style="margin-top:10px;">
+        <button type="submit" class="btn btn-primary">▶ Ejecutar FastQC</button>
+    </form>
+    </div>
 
+    <div class="tool-card" data-tool="bowtie">
+        <div class="tool-icon">🎯</div>
+        <h3>Bowtie2</h3>
+        <p>Alineamiento</p>
+        <!-- Botón para ejecutar Bowtie2 -->
+        <form action="{{ url_for('ejecutar_bowtie') }}" method="POST" style="margin-top:10px;">
+            <button type="submit" class="btn btn-primary">▶ Ejecutar Bowtie2</button>
+        </form>
+    </div>
+
+    <div class="tool-card" data-tool="velvet">
+        <div class="tool-icon">🧬</div>
+        <h3>Velvet</h3>
+        <p>Ensamblaje</p>
+    </div>
+
+    <div class="tool-card" data-tool="quast">
+        <div class="tool-icon">📈</div>
+        <h3>QUAST</h3>
+        <p>Evaluación</p>
+    </div>
+
+    <div class="tool-card" data-tool="augustus">
+        <div class="tool-icon">🔍</div>
+        <h3>AUGUSTUS</h3>
+        <p>Predicción de Genes</p>
+    </div>
+</div>
+
+            </div>
+
+            <!-- Progreso -->
+            <div class="card">
                 <div class="progress-container">
                     <h3>Progreso del Análisis</h3>
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill"></div>
                     </div>
                     <div id="progressText">Esperando archivos...</div>
-                </div>
-
-                <div style="text-align: center; margin-top: 30px;">
-                    <button class="btn btn-success" id="startAnalysis" disabled>
-                        🚀 Iniciar Análisis Completo
-                    </button>
+                    <button class="btn btn-success" id="startAnalysis" style="margin-top: 15px;">🚀 Iniciar Análisis</button>
                 </div>
             </div>
-            
-            <!-- Panel Lateral -->
-            <div class="quick-actions">
-                <a href="http://localhost:8080" class="action-card" target="_blank">
-                    <div class="action-icon">🌐</div>
-                    <h3>Galaxy Original</h3>
-                    <p>Abrir en nueva pestaña</p>
-                </a>
-                
-                <a href="/resultados" class="action-card">
-                    <div class="action-icon">📊</div>
-                    <h3>Ver Resultados</h3>
-                    <p>Tablas y gráficos</p>
-                </a>
-                
-                <a href="/historial" class="action-card">
-                    <div class="action-icon">📋</div>
-                    <h3>Historial</h3>
-                    <p>Análisis anteriores</p>
-                </a>
-                
-                <div class="action-card">
-                    <div class="action-icon">⚙️</div>
-                    <h3>Configuración</h3>
-                    <p>Ajustes del sistema</p>
-                </div>
+
+
+            <!-- Tabla de historiales -->
+            <div class="card">
+    <h2>Historiales de Galaxy</h2>
+    {% if historiales %}
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>ID</th>
+                        <th>Actualización</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for h in historiales %}
+                    <tr>
+                        <td>{{ h.name }}</td>
+                        <td style="font-family: monospace;">{{ h.id }}</td>
+                        <td>{{ h.update_time }}</td>
+                        <td><a href="https://usegalaxy.org{{ h.url }}" target="_blank">Abrir en Galaxy</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No se encontraron historiales.</p>
+    {% endif %}
+</div>
+
+        <!-- Barra lateral derecha -->
+        <div class="sidebar">
+            <a href="http://localhost:8080" class="action-card" target="_blank">
+                <div class="action-icon">🌐</div>
+                <h3>Galaxy Original</h3>
+                <p>Abrir en nueva pestaña</p>
+            </a>
+
+            <a href="/resultados" class="action-card">
+                <div class="action-icon">📊</div>
+                <h3>Ver Resultados</h3>
+                <p>Tablas y gráficos</p>
+            </a>
+
+            <a href="/historial" class="action-card">
+                <div class="action-icon">📋</div>
+                <h3>Historial</h3>
+                <p>Análisis anteriores</p>
+            </a>
+
+            <div class="action-card">
+                <div class="action-icon">⚙️</div>
+                <h3>Configuración</h3>
+                <p>Ajustes del sistema</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Manejo de subida de archivos
-        const fileInput = document.getElementById('fileInput');
-        const selectedFiles = document.getElementById('selectedFiles');
-        const uploadArea = document.getElementById('uploadArea');
-        const startButton = document.getElementById('startAnalysis');
-        const progressFill = document.getElementById('progressFill');
-        const progressText = document.getElementById('progressText');
-        
-        let selectedTools = new Set();
-        
-        // Arrastrar y soltar
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.style.borderColor = '#27ae60';
-            uploadArea.style.background = '#e8f5e8';
-        });
-        
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.style.borderColor = '#3498db';
-            uploadArea.style.background = '#f8f9fa';
-        });
-        
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            handleFiles(e.dataTransfer.files);
-        });
-        
-        fileInput.addEventListener('change', (e) => {
-            handleFiles(e.target.files);
-        });
-        
-        function handleFiles(files) {
-            selectedFiles.innerHTML = '';
-            
-            if (files.length === 0) {
-                selectedFiles.innerHTML = '<p>No hay archivos seleccionados</p>';
-                startButton.disabled = true;
-                return;
-            }
-            
-            for (let file of files) {
-                const fileItem = document.createElement('div');
-                fileItem.className = 'file-item';
-                fileItem.innerHTML = `
-                    <div>
-                        <strong>${file.name}</strong>
-                        <br>
-                        <small>${(file.size / 1024 / 1024).toFixed(2)} MB</small>
-                    </div>
-                    <div style="color: #27ae60;">✓</div>
-                `;
-                selectedFiles.appendChild(fileItem);
-            }
-            
-            startButton.disabled = false;
-            progressText.textContent = 'Archivos listos para análisis';
-        }
-        
         // Selección de herramientas
         document.querySelectorAll('.tool-card').forEach(card => {
             card.addEventListener('click', () => {
@@ -437,14 +398,21 @@
             });
         });
         
+        let selectedTools = new Set();
+        const startButton = document.getElementById('startAnalysis');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        
         function updateProgress() {
             const progress = (selectedTools.size / 5) * 100;
             progressFill.style.width = progress + '%';
             
             if (selectedTools.size > 0) {
                 progressText.textContent = `${selectedTools.size} herramienta(s) seleccionada(s)`;
+                startButton.disabled = false;
             } else {
                 progressText.textContent = 'Selecciona al menos una herramienta';
+                startButton.disabled = true;
             }
         }
         
@@ -478,9 +446,11 @@
         });
         
         function guardarEnHistorial() {
-            // Aquí iría la llamada a la API para guardar en la base de datos
             console.log('Guardando en historial...', Array.from(selectedTools));
         }
+
+        // Inicializar estado del botón
+        startButton.disabled = true;
     </script>
 </body>
 </html>

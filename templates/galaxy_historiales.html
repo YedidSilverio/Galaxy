@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Historiales de Galaxy</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        body { font-family: Arial, sans-serif; background:#0b1020; color:#eef; padding:20px; }
+        .card { background: rgba(20,24,40,0.9); padding:18px; border-radius:10px; max-width:980px; margin:0 auto; box-shadow:0 4px 18px rgba(0,0,0,0.6);}
+        table { width:100%; border-collapse:collapse; margin-top:12px; }
+        th, td { padding:10px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.06); }
+        th { color:#9be7ff; font-weight:600; }
+        a { color:#7fe7f7; text-decoration:none; }
+        .nav { margin-bottom:12px; }
+        .empty { color:#f88; }
+    </style>
+</head>
+<body>
+  <div class="card">
+    <div class="nav">
+      <a href="{{ url_for('dashboard') }}">&larr; Volver al dashboard</a>
+    </div>
+
+    <h1>Historiales de Galaxy</h1>
+    <p>Listado de historiales obtenidos desde <strong>usegalaxy.org</strong>.</p>
+
+    {% if historiales %}
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>ID</th>
+            <th>Actualización</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for h in historiales %}
+          <tr>
+            <td>{{ h.name }}</td>
+            <td style="font-family:monospace;">{{ h.id }}</td>
+            <td>{{ h.update_time }}</td>
+            <td><a href="https://usegalaxy.org{{ h.url }}" target="_blank">Abrir en Galaxy</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty">No se encontraron historiales.</p>
+    {% endif %}
+  </div>
+</body>
+</html>
