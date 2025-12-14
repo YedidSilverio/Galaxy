@@ -248,22 +248,14 @@
             <!-- Crear nueva historia -->
 <div class="card" style="margin-top: 20px;">
     <h2>➕ Crear Nueva Historia</h2>
-    <form action="{{ url_for('crear_historia') }}" method="POST" style="display:flex; gap:10px; align-items:center;">
-        <input type="text" name="nombre_historia" placeholder="Nombre de la nueva historia" required style="flex:1; padding:10px; border-radius:5px; border:1px solid #ccc;">
-        <button type="submit" class="btn btn-success">Crear Historia</button>
-    </form>
+    <a href="{{ url_for('crear_historia') }}" class="btn btn-success">Ir a Crear Historia</a>
 </div>
-
 
             <!-- Subida de archivos -->
 <div class="card">
     <h2>📁 Subir Archivos de Secuenciación</h2>
-    <form action="{{ url_for('subir_archivo') }}" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" required>
-        <button type="submit" class="btn btn-primary">📤 Subir Archivo</button>
-    </form>
+    <a href="{{ url_for('subir_archivo') }}" class="btn btn-primary">Ir a Subir Archivo</a>
 </div>
-
             <!-- Herramientas de Análisis -->
             <div class="card">
                 <h2>🔧 Herramientas de Análisis</h2>
