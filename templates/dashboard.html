@@ -223,6 +223,35 @@
         tr:hover {
             background-color: #f5f5f5;
         }
+
+        /* Estilos para el formulario de FastQC */
+        .fastqc-form-container {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ccc;
+            text-align: left;
+        }
+
+        .fastqc-form-container label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        .fastqc-form-container select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .fastqc-form-container .btn {
+            width: 100%;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -245,59 +274,90 @@
                 </div>
             </div>
 
+            <!-- Mensajes Flash de Flask -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <ul class="flashes">
+                {% for category, message in messages %}
+                  <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+              {% endif %}
+            {% endwith %}
+
             <!-- Crear nueva historia -->
-<div class="card" style="margin-top: 20px;">
-    <h2>➕ Crear Nueva Historia</h2>
-    <a href="{{ url_for('crear_historia') }}" class="btn btn-success">Ir a Crear Historia</a>
-</div>
+            <div class="card" style="margin-top: 20px;">
+                <h2>➕ Crear Nueva Historia</h2>
+                <a href="{{ url_for('crear_historia') }}" class="btn btn-success">Ir a Crear Historia</a>
+            </div>
 
             <!-- Subida de archivos -->
-<div class="card">
-    <h2>📁 Subir Archivos de Secuenciación</h2>
-    <a href="{{ url_for('subir_archivo') }}" class="btn btn-primary">Ir a Subir Archivo</a>
-</div>
+            <div class="card">
+                <h2>📁 Subir Archivos de Secuenciación</h2>
+                <a href="{{ url_for('subir_archivo') }}" class="btn btn-primary">Ir a Subir Archivo</a>
+            </div>
+            
             <!-- Herramientas de Análisis -->
             <div class="card">
                 <h2>🔧 Herramientas de Análisis</h2>
-<div class="tools-grid">
-            <!-- FastQC -->
-    <div class="tool-card" data-tool="fastqc">
-        <div class="tool-icon">📊</div>
-        <h3>FastQC</h3>
-        <p>Control de Calidad</p>
-        <form action="{{ url_for('ejecutar_fastqc') }}" method="POST" style="margin-top:10px;">
-        <button type="submit" class="btn btn-primary">▶ Ejecutar FastQC</button>
-    </form>
-    </div>
+                
+                <!-- Controles de Selección de Datos (Movidos aquí para ser usados por "Iniciar Análisis") -->
+                <div class="fastqc-form-container" id="data-selection-container">
+                    <label for="history_id_fastqc">Seleccionar Historia:</label>
+                    <select name="history_id" id="history_id_fastqc" required>
+                        <option value="">-- Seleccione una Historia --</option>
+                        {% for h in historiales %}
+                            <option value="{{ h.id }}">{{ h.name }} ({{ h.update_time | default('Sin actualizar') }})</option>
+                        {% endfor %}
+                    </select>
 
-    <div class="tool-card" data-tool="bowtie">
-        <div class="tool-icon">🎯</div>
-        <h3>Bowtie2</h3>
-        <p>Alineamiento</p>
-        <!-- Botón para ejecutar Bowtie2 -->
-        <form action="{{ url_for('ejecutar_bowtie') }}" method="POST" style="margin-top:10px;">
-            <button type="submit" class="btn btn-primary">▶ Ejecutar Bowtie2</button>
-        </form>
-    </div>
+                    <label for="datasetID_R1_fastqc">Dataset R1 (Obligatorio):</label>
+                    <select name="datasetID_R1" id="datasetID_R1_fastqc" required>
+                        <option value="">-- Seleccione un Dataset --</option>
+                        <!-- Los datasets se cargarán dinámicamente con JavaScript -->
+                    </select>
 
-    <div class="tool-card" data-tool="velvet">
-        <div class="tool-icon">🧬</div>
-        <h3>Velvet</h3>
-        <p>Ensamblaje</p>
-    </div>
+                    <label for="datasetID_R2_fastqc">Dataset R2 (Opcional):</label>
+                    <select name="datasetID_R2" id="datasetID_R2_fastqc">
+                        <option value="">-- Opcional (Single-End) --</option>
+                        <!-- Los datasets se cargarán dinámicamente con JavaScript -->
+                    </select>
+                </div>
+                
+                <div class="tools-grid">
+                    <!-- FastQC -->
+                    <div class="tool-card" data-tool="fastqc" id="tool-fastqc">
+                        <div class="tool-icon">📊</div>
+                        <h3>FastQC</h3>
+                        <p>Control de Calidad</p>
+                        <!-- Botón de ejecución eliminado -->
+                    </div>
 
-    <div class="tool-card" data-tool="quast">
-        <div class="tool-icon">📈</div>
-        <h3>QUAST</h3>
-        <p>Evaluación</p>
-    </div>
+                    <div class="tool-card" data-tool="bowtie" id="tool-bowtie">
+                        <div class="tool-icon">🎯</div>
+                        <h3>Bowtie2</h3>
+                        <p>Alineamiento</p>
+                        <!-- Botón de ejecución eliminado -->
+                    </div>
 
-    <div class="tool-card" data-tool="augustus">
-        <div class="tool-icon">🔍</div>
-        <h3>AUGUSTUS</h3>
-        <p>Predicción de Genes</p>
-    </div>
-</div>
+                    <div class="tool-card" data-tool="velvet">
+                        <div class="tool-icon">🧬</div>
+                        <h3>Velvet</h3>
+                        <p>Ensamblaje</p>
+                    </div>
+
+                    <div class="tool-card" data-tool="quast">
+                        <div class="tool-icon">📈</div>
+                        <h3>QUAST</h3>
+                        <p>Evaluación</p>
+                    </div>
+
+                    <div class="tool-card" data-tool="augustus">
+                        <div class="tool-icon">🔍</div>
+                        <h3>AUGUSTUS</h3>
+                        <p>Predicción de Genes</p>
+                    </div>
+                </div>
 
             </div>
 
@@ -308,42 +368,47 @@
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill"></div>
                     </div>
-                    <div id="progressText">Esperando archivos...</div>
+                    <div id="progressText">Selecciona una herramienta y haz clic en Iniciar Análisis.</div>
                     <button class="btn btn-success" id="startAnalysis" style="margin-top: 15px;">🚀 Iniciar Análisis</button>
+                    
+                    <!-- Contenedor para el resultado -->
+                    <div id="resultContainer" style="margin-top: 20px;">
+                        <!-- Aquí se mostrará el enlace al resultado -->
+                    </div>
                 </div>
             </div>
 
 
             <!-- Tabla de historiales -->
             <div class="card">
-    <h2>Historiales de Galaxy</h2>
-    {% if historiales %}
-        <div style="overflow-x: auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>ID</th>
-                        <th>Actualización</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for h in historiales %}
-                    <tr>
-                        <td>{{ h.name }}</td>
-                        <td style="font-family: monospace;">{{ h.id }}</td>
-                        <td>{{ h.update_time }}</td>
-                        <td><a href="https://usegalaxy.org{{ h.url }}" target="_blank">Abrir en Galaxy</a></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% else %}
-        <p>No se encontraron historiales.</p>
-    {% endif %}
-</div>
+                <h2>Historiales de Galaxy</h2>
+                {% if historiales %}
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>ID</th>
+                                    <th>Actualización</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for h in historiales %}
+                                <tr>
+                                    <td>{{ h.name }}</td>
+                                    <td style="font-family: monospace;">{{ h.id }}</td>
+                                    <td>{{ h.update_time }}</td>
+                                    <td><a href="https://usegalaxy.org{{ h.url }}" target="_blank">Abrir en Galaxy</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p>No se encontraron historiales.</p>
+                {% endif %}
+            </div>
 
         <!-- Barra lateral derecha -->
         <div class="sidebar">
@@ -356,7 +421,7 @@
             <a href="/resultados" class="action-card">
                 <div class="action-icon">📊</div>
                 <h3>Ver Resultados</h3>
-                <p>Tablas y gráficos</p>
+                <p>Resultados de análisis</p>
             </a>
 
             <a href="/historial" class="action-card">
@@ -374,7 +439,52 @@
     </div>
 
     <script>
-        // Selección de herramientas
+        // Función para cargar datasets
+        async function loadDatasets(historyId) {
+            const r1Select = document.getElementById('datasetID_R1_fastqc');
+            const r2Select = document.getElementById('datasetID_R2_fastqc');
+            
+            // Limpiar opciones anteriores
+            r1Select.innerHTML = '<option value="">-- Seleccione un Dataset --</option>';
+            r2Select.innerHTML = '<option value="">-- Opcional (Single-End) --</option>';
+
+            if (!historyId) {
+                return;
+            }
+
+            try {
+                // Llama a la ruta API que creamos en app.py
+                const response = await fetch(`/api/datasets/${historyId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const datasets = await response.json();
+
+                datasets.forEach(dataset => {
+                    const option = document.createElement('option');
+                    option.value = dataset.id;
+                    option.textContent = `${dataset.name} (${dataset.file_ext})`;
+                    
+                    // Clonar para R2
+                    const optionR2 = option.cloneNode(true);
+
+                    r1Select.appendChild(option);
+                    r2Select.appendChild(optionR2);
+                });
+
+            } catch (error) {
+                console.error('Error al cargar datasets:', error);
+                alert('Error al cargar los datasets. Asegúrese de que la ruta /api/datasets/<history_id> esté implementada y Galaxy esté accesible. Consulte la consola para más detalles.');
+            }
+        }
+
+        // Event listener para el cambio de historia
+        document.getElementById('history_id_fastqc').addEventListener('change', (event) => {
+            loadDatasets(event.target.value);
+        });
+
+        // --- Lógica de Selección de Herramientas ---
+        let selectedTools = new Set();
         document.querySelectorAll('.tool-card').forEach(card => {
             card.addEventListener('click', () => {
                 card.classList.toggle('selected');
@@ -390,17 +500,18 @@
             });
         });
         
-        let selectedTools = new Set();
         const startButton = document.getElementById('startAnalysis');
         const progressFill = document.getElementById('progressFill');
         const progressText = document.getElementById('progressText');
+        const resultContainer = document.getElementById('resultContainer');
         
         function updateProgress() {
+            // Lógica simple de progreso basada en herramientas seleccionadas
             const progress = (selectedTools.size / 5) * 100;
             progressFill.style.width = progress + '%';
             
             if (selectedTools.size > 0) {
-                progressText.textContent = `${selectedTools.size} herramienta(s) seleccionada(s)`;
+                progressText.textContent = `${selectedTools.size} herramienta(s) seleccionada(s). Listo para iniciar.`;
                 startButton.disabled = false;
             } else {
                 progressText.textContent = 'Selecciona al menos una herramienta';
@@ -408,39 +519,85 @@
             }
         }
         
-        // Iniciar análisis
-        startButton.addEventListener('click', () => {
+        // --- Lógica de Iniciar Análisis (AJAX) ---
+        startButton.addEventListener('click', async () => {
             if (selectedTools.size === 0) {
                 alert('Por favor selecciona al menos una herramienta');
                 return;
             }
             
+            // Solo implementamos FastQC por ahora
+            if (!selectedTools.has('fastqc')) {
+                alert('Solo la ejecución de FastQC está implementada por el momento. Por favor, selecciona FastQC.');
+                return;
+            }
+
+            const historyId = document.getElementById('history_id_fastqc').value;
+            const datasetR1 = document.getElementById('datasetID_R1_fastqc').value;
+            const datasetR2 = document.getElementById('datasetID_R2_fastqc').value;
+
+            if (!historyId || !datasetR1) {
+                alert('Por favor, selecciona una Historia y el Dataset R1.');
+                return;
+            }
+            
+            // Deshabilitar botón e iniciar simulación de progreso
             startButton.disabled = true;
             startButton.textContent = '⏳ Procesando...';
-            
-            // Simular progreso
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 5;
-                progressFill.style.width = progress + '%';
-                progressText.textContent = `Analizando... ${progress}%`;
-                
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    progressText.textContent = '✅ Análisis completado!';
-                    startButton.textContent = '🔄 Ejecutar Nuevo Análisis';
-                    startButton.disabled = false;
-                    
-                    // Guardar en historial
-                    guardarEnHistorial();
+            progressText.textContent = 'Enviando solicitud a Galaxy...';
+            resultContainer.innerHTML = ''; // Limpiar resultados anteriores
+
+            try {
+                // 1. Enviar solicitud al backend (nueva ruta)
+                const response = await fetch('/api/iniciar_analisis', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tool: 'fastqc', // Herramienta seleccionada
+                        history_id: historyId,
+                        datasetID_R1: datasetR1,
+                        datasetID_R2: datasetR2 || null // Enviar null si está vacío
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Error desconocido al iniciar el análisis.');
                 }
-            }, 200);
+
+                // 2. Simular progreso mientras Galaxy trabaja (opcional, pero útil)
+                progressText.textContent = `Jobs de Galaxy iniciados: ${data.job_ids.join(', ')}. Esperando resultados...`;
+                
+                // 3. Mostrar enlace al resultado (usando el primer output ID)
+                if (data.output_ids && data.output_ids.length > 0) {
+                    const firstOutputId = data.output_ids[0];
+                    resultContainer.innerHTML = `
+                        <p style="font-weight: bold; color: var(--success);">✅ Análisis Completado.</p>
+                        <a href="/ver_resultado/${firstOutputId}" target="_blank" class="btn btn-primary">
+                            📊 Ver Informe FastQC
+                        </a>
+                    `;
+                } else {
+                    resultContainer.innerHTML = `<p style="font-weight: bold; color: var(--warning);">Análisis completado, pero no se encontró el ID del resultado.</p>`;
+                }
+
+                progressFill.style.width = '100%';
+                progressText.textContent = '✅ Análisis completado!';
+                
+            } catch (error) {
+                console.error('Error en el análisis:', error);
+                progressFill.style.width = '0%';
+                progressText.textContent = `❌ Error: ${error.message}`;
+                alert(`Error al ejecutar el análisis: ${error.message}`);
+            } finally {
+                startButton.textContent = '🔄 Iniciar Nuevo Análisis';
+                startButton.disabled = false;
+            }
         });
         
-        function guardarEnHistorial() {
-            console.log('Guardando en historial...', Array.from(selectedTools));
-        }
-
         // Inicializar estado del botón
         startButton.disabled = true;
     </script>
