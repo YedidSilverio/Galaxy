@@ -1,31 +1,159 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Registro - Galaxy</title>
+    <meta charset="UTF-8">
+    <title>Registro - Galaxy Project</title>
+    <style>
+        /* Fondo tipo galaxia */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at top, #1a002b, #000);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Efecto de estrellas animadas */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.3;
+            animation: stars 60s linear infinite;
+        }
+
+        @keyframes stars {
+            from { background-position: 0 0; }
+            to { background-position: 10000px 10000px; }
+        }
+
+        .login-container {
+            position: relative;
+            background: rgba(30, 30, 60, 0.8);
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.6);
+            padding: 40px;
+            width: 340px;
+            z-index: 1;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #00ffff, #8a2be2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+            background: #1a1a3d;
+            color: #fff;
+            font-size: 1em;
+            transition: box-shadow 0.3s ease;
+        }
+
+        input:focus {
+            box-shadow: 0 0 10px #8a2be2;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #00ffff, #8a2be2);
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        input[type="submit"]:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #8a2be2, #00ffff);
+        }
+
+        .messages {
+            color: #ff4d4d;
+            margin-bottom: 15px;
+        }
+
+        a {
+            color: #00ffff;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Registro Galaxy</h1>
-    
-    <!-- Mostrar mensajes -->
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <div style="color: red;">
-                {% for message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
-    
-    <!-- Formulario de registro -->
-    <form method="POST">
-        <p>Usuario: <input type="text" name="username" required></p>
-        <p>Email: <input type="email" name="email" required></p>
-        <p>Contraseña: <input type="password" name="password" required></p>
-        <p>Confirmar Contraseña: <input type="password" name="confirm_password" required></p>
-        <p><input type="submit" value="Registrarse"></p>
-    </form>
-    
-    <p><a href="{{ url_for('login') }}">¿Ya tienes cuenta? Inicia sesión aquí</a></p>
+
+    <div class="login-container">
+        <h1>Registro Galaxy</h1>
+
+        <!-- Mensajes Flask -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Formulario de registro -->
+        <form method="POST" id="registerForm">
+            <input type="text" name="username" placeholder="Usuario" required>
+            <input type="email" name="email" placeholder="Correo" required>
+            <input type="password" name="password" placeholder="Contraseña" required>
+            <input type="password" name="confirm_password" placeholder="Confirmar Contraseña" required>
+            <input type="submit" value="Registrarse">
+        </form>
+
+        <p><a href="{{ url_for('login') }}">¿Ya tienes cuenta? Inicia sesión aquí</a></p>
+    </div>
+
+    <script>
+        // Animación de aparición suave
+        document.addEventListener("DOMContentLoaded", () => {
+            const box = document.querySelector(".login-container");
+            box.style.opacity = 0;
+            setTimeout(() => {
+                box.style.transition = "opacity 1.5s";
+                box.style.opacity = 1;
+            }, 100);
+        });
+
+        // Validación sencilla
+        document.getElementById("registerForm").addEventListener("submit", (e) => {
+            const pass = document.querySelector("input[name='password']").value;
+            const confirm = document.querySelector("input[name='confirm_password']").value;
+
+            if (pass !== confirm) {
+                e.preventDefault();
+                alert("Las contraseñas no coinciden.");
+            }
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resultados de Análisis - Galaxy Bioinformática</title>
+    <style>
+        /* Puedes copiar los estilos de tu dashboard.html aquí o enlazar un archivo CSS */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .analisis-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        .analisis-card h2 {
+            color: #3498db;
+            margin-top: 0;
+        }
+        .analisis-card p {
+            margin: 5px 0;
+        }
+        .resultado-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 15px;
+            background-color: #27ae60;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .resultado-link:hover {
+            background-color: #219d55;
+        }
+        .status-ok { color: #27ae60; font-weight: bold; }
+        .status-advertencia { color: #f39c12; font-weight: bold; }
+        .status-error { color: #e74c3c; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Historial de Resultados de Análisis</h1>
+        <p>Bienvenido, {{ username }}. Aquí puedes ver los resultados de tus análisis ejecutados.</p>
+        
+        {% if analisis %}
+            {% for a in analisis %}
+                <div class="analisis-card">
+                    <h2>{{ a.tool_name }} (ID: {{ a.id }})</h2>
+                    <p><strong>Archivos de Entrada:</strong> {{ a.input_file }}</p>
+                    <p><strong>Fecha:</strong> {{ a.created_at }}</p>
+                    <p><strong>Estado:</strong> <span class="status-{{ a.status }}">{{ a.status | upper }}</span></p>
+                    
+                    {% if a.resultados %}
+                        <h3>Resultados Disponibles:</h3>
+                        {% for r in a.resultados %}
+                            {% if r.output_type == 'html' %}
+                                <a href="{{ url_for('ver_resultado', resultado_id=r.id) }}" target="_blank" class="resultado-link">
+                                    Ver Informe {{ a.tool_name }} (HTML)
+                                </a>
+                            {% else %}
+                                <p>Resultado {{ r.output_type }} (ID Local: {{ r.id }})</p>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p>No se encontraron resultados de salida para este análisis.</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Aún no has ejecutado ningún análisis con resultados guardados.</p>
+        {% endif %}
+        
+        <p><a href="{{ url_for('dashboard') }}">← Volver al Dashboard</a></p>
+    </div>
+</body>
+</html>
